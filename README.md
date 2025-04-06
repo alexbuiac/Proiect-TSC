@@ -154,23 +154,22 @@ flowchart TB
     
 - **Consum**: Posibilitate de moduri low-power (sleep, deep sleep).
 
-
-### 2. Afișajul E-Paper (7.5 inch)
-
-- **Model**: Waveshare (sau echivalent) cu rezoluție 800×480.
-    
-- **Interfață**: 4-wire SPI + semnale de control (CS, DC, RST, BUSY).
-    
-- **Consum**: Foarte redus în mod static (după refresh), dar necesită un curent mai mare în timpul refresh-ului (aprox. 15–25mA, în funcție de modul de actualizare).
-    
-
-### 3. Senzor de Mediu – BME688
+### 2. Senzor de Mediu – BME688
 
 - **Parametri măsurați**: Temperatură, Umiditate, Presiune și Calitate aer (VOC/eCO2).
     
 - **Interfață**: I²C la 400kHz (SDA și SCL).
     
 - **Consum**: Foarte mic (în jur de 2.1µA în standby și până la câteva mA în mod de măsurare).
+
+
+### 3. Afișajul E-Paper (7.5 inch)
+
+- **Model**: Waveshare (sau echivalent) cu rezoluție 800×480.
+    
+- **Interfață**: 4-wire SPI + semnale de control (CS, DC, RST, BUSY).
+    
+- **Consum**: Foarte redus în mod static (după refresh), dar necesită un curent mai mare în timpul refresh-ului (aprox. 15–25mA, în funcție de modul de actualizare).
     
 
 ### 4. Baterie și Managementul Energiei
@@ -184,22 +183,22 @@ flowchart TB
 - **LDO**: XC6220A331MR-G (exemplu) sau echivalent, pentru a asigura 3.3V stabil pentru microcontroller și restul componentelor.
     
 
-### 5. Butoane (3x Tactile Switch)
-
-- **Tip**: Tactile switch Panasonic (sau echivalent).
-    
-- **Funcții**: Navigare meniu, selectare opțiune, întoarcere pagină etc.
-    
-- **Conexiune**: Fiecare buton se leagă la un GPIO al ESP32-C6 printr-un circuit de debouncing (rezistență și condensator) sau se poate face debouncing în firmware.
-    
-
-### 6. USB-C Port
+### 5. USB-C Port
 
 - **Rol**: Încărcare baterie + Transfer de date (USB 2.0 full-speed).
     
 - **Protecții**: ESD (USBLC6-2SC6Y) + rezistențe de terminare.
     
 - **Posibilitate**: Actualizări firmware prin USB (bootloader + tool extern) sau direct OTA prin Wi-Fi.
+
+
+### 6. Butoane (3x Tactile Switch)
+
+- **Tip**: Tactile switch Panasonic (sau echivalent).
+    
+- **Funcții**: Navigare meniu, selectare opțiune, întoarcere pagină etc.
+    
+- **Conexiune**: Fiecare buton se leagă la un GPIO al ESP32-C6 printr-un circuit de debouncing (rezistență și condensator) sau se poate face debouncing în firmware.
     
 
 ### 7. Conector Qwiic (I²C)
@@ -216,20 +215,20 @@ flowchart TB
 - **Interfață**: Poate fi SD (1-bit / 4-bit) sau SPI, în funcție de configurația firmware-ului.
     
 
+### 10. Memorii Suplimentare
+
+- **W25Q512JVEIQ** (Flash extern) – conectat la ESP32-C6 prin SPI dedicat (quad SPI).
+    
+    - Aici se stochează firmware-ul și datele mari (e-book-uri etc.).
+
+
 ### 9. RTC – DS3231
 
 - **Funcție**: Asigură un ceas de timp real foarte precis.
     
 - **Interfață**: I²C (aceeași magistrală cu BME688 și MAX17048).
     
-- **Backup**: Supercondensator sau baterie secundară pentru a menține timpul și în absența alimentării principale.
-    
-
-### 10. Memorii Suplimentare
-
-- **W25Q512JVEIQ** (Flash extern) – conectat la ESP32-C6 prin SPI dedicat (quad SPI).
-    
-    - Aici se stochează firmware-ul și datele mari (e-book-uri etc.).
+- **Backup**: Supercondensator sau baterie secundară pentru a menține timpul și în absența alimentării principale.    
         
 
 ## 4. Folosirea pinilor ESP32-C6
