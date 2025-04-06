@@ -1,4 +1,4 @@
-# Proiect TSC 2025 - OpenBook
+# Proiect TSC 2025
 
 ## 1. Diagrama bloc a device-ului
 
@@ -140,3 +140,125 @@ flowchart TB
 | U4                | MAX17048G+T10                                | https://www.snapeda.com/parts/MAX17048G+T10/Analog+Devices/view-part/?ref=eda                                 | https://www.snapeda.com/parts/MAX17048G+T10/Analog+Devices/view-part/?ref=eda                                 |
 | U5                | ESP32_WROVER_SPARKFUN-IC-POWER_MCP73831      | https://eu.mouser.com/ProductDetail/Microchip-Technology/MCP73831T-2ACI-OT?qs=yUQqVecv4qvbBQBGbHx0Mw%3D%3Dcf   | https://eu.mouser.com/ProductDetail/Microchip-Technology/MCP73831T-2ACI-OT?qs=yUQqVecv4qvbBQBGbHx0Mw%3D%3Dcf   |
 
+## 3. Descrierea in detaliu a functionalitatilor hardware 
+
+### 1. Microcontroller – ESP32-C6
+
+- **Procesor**: 32-bit RISC-V, cu frecvență de până la 160MHz.
+    
+- **Memorie**: 512KB SRAM intern și 8MB flash extern (W25Q512JVEIQ).
+    
+- **Conectivitate**: Wi-Fi 6 (802.11ax), Bluetooth 5 (LE), USB 2.0 (full-speed).
+    
+- **Periferice**: SPI, I²C, UART, GPIO multiple.
+    
+- **Consum**: Posibilitate de moduri low-power (sleep, deep sleep).
+
+
+### 2. Afișajul E-Paper (7.5 inch)
+
+- **Model**: Waveshare (sau echivalent) cu rezoluție 800×480.
+    
+- **Interfață**: 4-wire SPI + semnale de control (CS, DC, RST, BUSY).
+    
+- **Consum**: Foarte redus în mod static (după refresh), dar necesită un curent mai mare în timpul refresh-ului (aprox. 15–25mA, în funcție de modul de actualizare).
+    
+
+**De ce l-am ales?**  
+E-paper consumă energie doar când reîmprospătează imaginea. Este ideal pentru un e-reader, deoarece menține afișajul vizibil fără consum suplimentar.
+
+---
+
+### 3. Senzor de Mediu – BME688
+
+- **Parametri măsurați**: Temperatură, Umiditate, Presiune și Calitate aer (VOC/eCO2).
+    
+- **Interfață**: I²C la 400kHz (SDA și SCL).
+    
+- **Consum**: Foarte mic (în jur de 2.1µA în standby și până la câteva mA în mod de măsurare).
+    
+
+**De ce BME688?**  
+Integrează într-un singur cip mai multe tipuri de măsurători de mediu, util pentru a afișa date despre condițiile de citire (temperatură, umiditate etc.).
+
+---
+
+### 4. Baterie și Managementul Energiei
+
+- **Baterie Li-Po 2500mAh** (3.7V nominal).
+    
+- **IC de Încărcare**: MCP73831 (Microchip) – încărcare Li-Po prin USB-C (până la 1A).
+    
+- **Fuel Gauge**: MAX17048 – monitorizează nivelul de încărcare, tensiunea și starea bateriei (I²C).
+    
+- **LDO**: XC6220A331MR-G (exemplu) sau echivalent, pentru a asigura 3.3V stabil pentru microcontroller și restul componentelor.
+    
+
+**De ce aceste componente?**
+
+- MCP73831 este un controler simplu, fiabil și compatibil cu USB.
+    
+- MAX17048 oferă date precise despre nivelul bateriei și poate alerta asupra unei baterii descărcate.
+    
+
+---
+
+### 5. Butoane (3x Tactile Switch)
+
+- **Tip**: Tactile switch Panasonic (sau echivalent).
+    
+- **Funcții**: Navigare meniu, selectare opțiune, întoarcere pagină etc.
+    
+- **Conexiune**: Fiecare buton se leagă la un GPIO al ESP32-C6 printr-un circuit de debouncing (rezistență și condensator) sau se poate face debouncing în firmware.
+    
+
+---
+
+### 6. USB-C Port
+
+- **Rol**: Încărcare baterie + Transfer de date (USB 2.0 full-speed).
+    
+- **Protecții**: ESD (USBLC6-2SC6Y) + rezistențe de terminare.
+    
+- **Posibilitate**: Actualizări firmware prin USB (bootloader + tool extern) sau direct OTA prin Wi-Fi.
+    
+
+---
+
+### 7. Conector Qwiic (I²C)
+
+- Conector standard cu 4 pini: VCC, GND, SDA, SCL.
+    
+- Permite atașarea rapidă a altor senzori sau module I²C (expansiune, testare, prototipare rapidă).
+    
+
+---
+
+### 8. SD Memory Card Connector (112A-TAAR-R03)
+
+- **Rol**: Posibilitate de stocare externă pentru e-book-uri, log-uri sau update-uri firmware.
+    
+- **Interfață**: Poate fi SD (1-bit / 4-bit) sau SPI, în funcție de configurația firmware-ului.
+    
+
+---
+
+### 9. RTC – DS3231
+
+- **Funcție**: Asigură un ceas de timp real foarte precis.
+    
+- **Interfață**: I²C (aceeași magistrală cu BME688 și MAX17048).
+    
+- **Backup**: Supercondensator sau baterie secundară pentru a menține timpul și în absența alimentării principale.
+    
+
+---
+
+### 10. Memorii Suplimentare
+
+- **W25Q512JVEIQ** (Flash extern) – conectat la ESP32-C6 prin SPI dedicat (quad SPI).
+    
+    - Aici se stochează firmware-ul și datele mari (e-book-uri etc.).
+        
+
+---
