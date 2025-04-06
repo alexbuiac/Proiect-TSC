@@ -164,11 +164,6 @@ flowchart TB
 - **Consum**: Foarte redus în mod static (după refresh), dar necesită un curent mai mare în timpul refresh-ului (aprox. 15–25mA, în funcție de modul de actualizare).
     
 
-**De ce l-am ales?**  
-E-paper consumă energie doar când reîmprospătează imaginea. Este ideal pentru un e-reader, deoarece menține afișajul vizibil fără consum suplimentar.
-
----
-
 ### 3. Senzor de Mediu – BME688
 
 - **Parametri măsurați**: Temperatură, Umiditate, Presiune și Calitate aer (VOC/eCO2).
@@ -177,11 +172,6 @@ E-paper consumă energie doar când reîmprospătează imaginea. Este ideal pent
     
 - **Consum**: Foarte mic (în jur de 2.1µA în standby și până la câteva mA în mod de măsurare).
     
-
-**De ce BME688?**  
-Integrează într-un singur cip mai multe tipuri de măsurători de mediu, util pentru a afișa date despre condițiile de citire (temperatură, umiditate etc.).
-
----
 
 ### 4. Baterie și Managementul Energiei
 
@@ -194,15 +184,6 @@ Integrează într-un singur cip mai multe tipuri de măsurători de mediu, util 
 - **LDO**: XC6220A331MR-G (exemplu) sau echivalent, pentru a asigura 3.3V stabil pentru microcontroller și restul componentelor.
     
 
-**De ce aceste componente?**
-
-- MCP73831 este un controler simplu, fiabil și compatibil cu USB.
-    
-- MAX17048 oferă date precise despre nivelul bateriei și poate alerta asupra unei baterii descărcate.
-    
-
----
-
 ### 5. Butoane (3x Tactile Switch)
 
 - **Tip**: Tactile switch Panasonic (sau echivalent).
@@ -211,8 +192,6 @@ Integrează într-un singur cip mai multe tipuri de măsurători de mediu, util 
     
 - **Conexiune**: Fiecare buton se leagă la un GPIO al ESP32-C6 printr-un circuit de debouncing (rezistență și condensator) sau se poate face debouncing în firmware.
     
-
----
 
 ### 6. USB-C Port
 
@@ -223,8 +202,6 @@ Integrează într-un singur cip mai multe tipuri de măsurători de mediu, util 
 - **Posibilitate**: Actualizări firmware prin USB (bootloader + tool extern) sau direct OTA prin Wi-Fi.
     
 
----
-
 ### 7. Conector Qwiic (I²C)
 
 - Conector standard cu 4 pini: VCC, GND, SDA, SCL.
@@ -232,16 +209,12 @@ Integrează într-un singur cip mai multe tipuri de măsurători de mediu, util 
 - Permite atașarea rapidă a altor senzori sau module I²C (expansiune, testare, prototipare rapidă).
     
 
----
-
 ### 8. SD Memory Card Connector (112A-TAAR-R03)
 
 - **Rol**: Posibilitate de stocare externă pentru e-book-uri, log-uri sau update-uri firmware.
     
 - **Interfață**: Poate fi SD (1-bit / 4-bit) sau SPI, în funcție de configurația firmware-ului.
     
-
----
 
 ### 9. RTC – DS3231
 
@@ -252,8 +225,6 @@ Integrează într-un singur cip mai multe tipuri de măsurători de mediu, util 
 - **Backup**: Supercondensator sau baterie secundară pentru a menține timpul și în absența alimentării principale.
     
 
----
-
 ### 10. Memorii Suplimentare
 
 - **W25Q512JVEIQ** (Flash extern) – conectat la ESP32-C6 prin SPI dedicat (quad SPI).
@@ -261,4 +232,27 @@ Integrează într-un singur cip mai multe tipuri de măsurători de mediu, util 
     - Aici se stochează firmware-ul și datele mari (e-book-uri etc.).
         
 
----
+## 4. Folosirea pinilor ESP32-C6
+
+| Pin ESP32-C6    | Componentă / Semnal                       | De ce?                                                        |
+| --------------- | ----------------------------------------- | ------------------------------------------------------------- |
+| **GPIO1 (SDA)** | I²C SDA (BME688, MAX17048, DS3231, Qwiic) | Partajare magistrală I²C pentru toți senzorii și RTC.         |
+| **GPIO2 (SCL)** | I²C SCL (BME688, MAX17048, DS3231, Qwiic) | Linia de clock pentru I²C.                                    |
+| **GPIO5**       | SPI MISO (E-Paper)                        | Citirea datelor/statusului display-ului (dacă e suportat).    |
+| **GPIO6**       | SPI MOSI (E-Paper)                        | Trimiterea datelor către e-paper.                             |
+| **GPIO7**       | SPI CLK (E-Paper)                         | Semnal de clock pentru e-paper.                               |
+| **GPIO8**       | SPI CS (E-Paper)                          | Chip Select pentru e-paper.                                   |
+| **GPIO9**       | E-Paper DC (Data/Command)                 | Semnal care diferențiază datele de comenzile pentru afișaj.   |
+| **GPIO10**      | E-Paper RST                               | Reset hardware pentru e-paper.                                |
+| **GPIO11**      | E-Paper BUSY                              | Intrare din display, indică dacă este ocupat.                 |
+| **GPIO12**      | Button #1                                 | Intrare digitală pentru buton (ex. NEXT page).                |
+| **GPIO13**      | Button #2                                 | Intrare digitală pentru buton (ex. PREV page).                |
+| **GPIO14**      | Button #3                                 | Intrare digitală pentru buton (ex. MENU/OK).                  |
+| **GPIO15**      | MAX17048 ALERT (opțional)                 | Avertizare nivel baterie scăzut.                              |
+| **GPIO16**      | USB D+ (intern la USB PHY)                | Pin dedicat pentru USB 2.0. (În mod normal pin hardware fix). |
+| **GPIO17**      | USB D- (intern la USB PHY)                | Pin dedicat pentru USB 2.0. (La fel, pin fix).                |
+| **GPIO18**      | LED de status (opțional)                  | Indicator pentru diverse stări (Wi-Fi, încărcare, etc.).      |
+| **GPIO19**      | SD Card CS (opțional)                     | Chip Select pentru cardul SD (dacă se folosește SPI).         |
+| **GPIO20**      | SD Card MISO (opțional)                   | Intrare date de la card SD.                                   |
+| **GPIO21**      | SD Card MOSI (opțional)                   | Ieșire date către card SD.                                    |
+| **GPIO4**       | SD Card CLK (opțional)                    | Semnal de clock pentru card SD (SPI).                         |
