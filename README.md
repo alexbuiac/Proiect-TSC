@@ -255,3 +255,8 @@ flowchart TB
 | **GPIO20**      | SD Card MISO (opțional)                   | Intrare date de la card SD.                                   |
 | **GPIO21**      | SD Card MOSI (opțional)                   | Ieșire date către card SD.                                    |
 | **GPIO4**       | SD Card CLK (opțional)                    | Semnal de clock pentru card SD (SPI).                         |
+
+
+## 5. Imagini
+![PCB](./Images/PCB.png "PCB")
+![exploded](./Images/exploded.png "exploded")
